@@ -1,0 +1,12 @@
+flask
+flask-sqlalchemy
+werkzeug
+requests
+flask-socketio
+fpdf
+scapy
+scikit-learn
+numpy
+joblib
+eventlet
+psycopg2-binary

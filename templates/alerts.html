@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Alerts</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>🛡️ SOC Dashboard</h2>
+    <ul>
+      <li><a href="/">Dashboard</a></li>
+      <li><a href="/alerts" class="active">Alerts</a></li>
+      <li><a href="/reports">Reports</a></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <h1>⚠️ Threat Alerts</h1>
+    <table id="alertsTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Timestamp</th>
+          <th>Source</th>
+          <th>Event</th>
+          <th>Severity</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Alerts data dynamically inserted -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    function classifySeverity(event) {
+      const high = ["Ransomware Detected", "SQL Injection Attempt", "Data Exfiltration Attempt"];
+      const medium = ["Brute Force Login Detected"];
+
+      if (high.includes(event)) return "High";
+      if (medium.includes(event)) return "Medium";
+      return "Low"; // Default if not matched
+    }
+
+    fetch("/get_all_threats")
+      .then(response => response.json())
+      .then(data => {
+        const table = document.getElementById("alertsTable").getElementsByTagName("tbody")[0];
+        table.innerHTML = "";
+        data.forEach(threat => {
+          const severity = classifySeverity(threat.event); // 🔥 Classify here manually
+          const severityClass = severity === "High" ? "status-danger" :
+                                severity === "Medium" ? "status-warn" :
+                                "status-ok";
+
+          const row = `<tr>
+            <td>${threat.id}</td>
+            <td>${threat.timestamp}</td>
+            <td>${threat.source}</td>
+            <td>${threat.event}</td>
+            <td class="${severityClass}">${severity}</td>
+            <td>${threat.status}</td>
+          </tr>`;
+          table.innerHTML += row;
+        });
+      });
+  </script>
+</body>
+</html>

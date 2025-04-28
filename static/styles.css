@@ -1,0 +1,204 @@
+/* === Base Reset === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* === General Layout === */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #0f172a;
+  color: #e2e8f0;
+  display: flex;
+}
+
+/* === Sidebar === */
+.sidebar {
+  width: 250px;
+  background: #1e293b;
+  padding: 20px;
+  min-height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+.sidebar h2 {
+  color: white;
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin-bottom: 12px;
+}
+
+.sidebar ul li a {
+  color: #aeb6c1;
+  text-decoration: none;
+  font-size: 15px;
+  padding: 10px 16px;
+  display: block;
+  border-radius: 6px;
+  transition: all 0.2s ease-in-out;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+  background-color: #334155;
+  color: #fff;
+}
+
+/* === Main Content === */
+.main-content {
+  margin-left: 270px;
+  padding: 40px;
+  width: 100%;
+  background-color: #121621;
+}
+
+/* === Cards & Panels === */
+.card {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  color: white;
+  position: relative;
+}
+
+.card h3 {
+  color: #1abc9c;
+  margin-bottom: 10px;
+}
+
+.card.editable {
+  border: 2px dashed #10b981;
+  cursor: move;
+}
+
+.card .delete-btn {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: #ef4444;
+  border: none;
+  color: white;
+  padding: 4px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.card.editable .delete-btn {
+  display: block;
+}
+
+/* === Charts === */
+.charts-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+canvas {
+  max-width: 350px;
+  max-height: 350px;
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+/* === Tables === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: white;
+  color: black;
+}
+
+th, td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+th {
+  background: #1abc9c;
+  color: white;
+}
+
+/* === Status Pills === */
+.status-pill {
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-weight: bold;
+  font-size: 13px;
+  display: inline-block;
+}
+
+.status-pending {
+  background-color: #334155;
+  color: #facc15;
+}
+
+.status-resolved {
+  background-color: #15803d;
+  color: #d1fae5;
+}
+
+.status-escalated {
+  background-color: #b91c1c;
+  color: #fee2e2;
+}
+
+.status-triaged {
+  background-color: #2563eb;
+  color: #dbeafe;
+}
+
+/* === Dashboard Grid === */
+.dashboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* === Edit Controls === */
+button.edit-toggle {
+  margin: 20px 0;
+  padding: 10px 20px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+button.edit-toggle:hover {
+  background: #059669;
+}
+
+/* === Alerts === */
+.alert-banner {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  position: relative;
+}
+
+.alert-banner.show {
+  opacity: 1;
+}

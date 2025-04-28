@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Threat Timeline</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.0/socket.io.js"></script>
+    <style>
+        .status-danger { color: red; font-weight: bold; }
+        .status-warn { color: orange; font-weight: bold; }
+        .status-ok { color: green; font-weight: bold; }
+        ul#timelineList li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
+        }
+        ul#timelineList li:hover {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>🛡️ SOC Dashboard</h2>
+        <ul>
+            <li><a href="/">Dashboard</a></li>
+            <li><a href="/incident_response">Incident Response</a></li>
+            <li><a href="/alerts">Alerts</a></li>
+            <li><a href="/reports">Reports</a></li>
+            <li><a href="/threat_timeline" class="active">Threat Timeline</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <h1>📊 Threat Timeline</h1>
+
+        <section class="container">
+            <h2>🧬 Threat Event Timeline</h2>
+
+            <label for="filterType" style="display: inline-block; margin-right: 10px;">Filter by Type:</label>
+            <select id="filterType" style="padding: 6px 10px; border-radius: 4px; margin-bottom: 20px;">
+                <option value="all">All</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+            </select>
+
+            <ul id="timelineList">
+                <!-- Dynamic timeline content will render here -->
+            </ul>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const socket = io();
+            const timelineList = document.getElementById("timelineList");
+            const filterType = document.getElementById("filterType");
+
+            function updateTimeline(threats) {
+                timelineList.innerHTML = "";
+                threats.forEach(threat => {
+                    if (filterType.value === "all" || threat.severity.toLowerCase() === filterType.value) {
+                        let listItem = document.createElement("li");
+                        listItem.innerHTML = `
+                            <strong>${threat.timestamp}</strong> - ${threat.event}
+                            <span class="${getSeverityClass(threat.severity)}">(${threat.severity})</span>
+                        `;
+                        listItem.addEventListener("click", () => {
+                            alert(`🕵️ Threat Details:\n\nSource: ${threat.source}\nEvent: ${threat.event}\nSeverity: ${threat.severity}\nStatus: ${threat.status}`);
+                        });
+                        timelineList.appendChild(listItem);
+                    }
+                });
+            }
+
+            function getSeverityClass(sev) {
+                if (sev === "High") return "status-danger";
+                if (sev === "Medium") return "status-warn";
+                if (sev === "Low") return "status-ok";
+                return "";
+            }
+
+            socket.on("threat_data", function (data) {
+                updateTimeline(data);
+            });
+
+            filterType.addEventListener("change", function () {
+                socket.emit("request_threat_data");
+            });
+
+            // Initial request
+            socket.emit("request_threat_data");
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Threat Timeline</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.0/socket.io.js"></script>
+    <script src="/static/script.js" defer></script>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>🛡️ SOC Dashboard</h2>
+        <ul>
+            <li><a href="/">Dashboard</a></li>
+            <li><a href="/incident_response">Incident Response</a></li>
+            <li><a href="/alerts">Alerts</a></li>
+            <li><a href="/reports">Reports</a></li>
+            <li><a href="/threat_timeline" class="active">Threat Timeline</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <h1>📊 Threat Timeline</h1>
+
+        <section class="container">
+            <h2>🧬 Threat Event Timeline</h2>
+
+            <label for="filterType" style="display: inline-block; margin-right: 10px;">Filter by Type:</label>
+            <select id="filterType" style="padding: 6px 10px; border-radius: 4px; margin-bottom: 20px;">
+                <option value="all">All</option>
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+            </select>
+
+            <ul id="timelineList">
+
+            </ul>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const socket = io();
+            const timelineList = document.getElementById("timelineList");
+            const filterType = document.getElementById("filterType");
+
+            function updateTimeline(threats) {
+                timelineList.innerHTML = "";
+                threats.forEach(threat => {
+                    if (filterType.value === "all" || threat.severity.toLowerCase() === filterType.value) {
+                        let listItem = document.createElement("li");
+                        listItem.innerHTML = `
+                            <strong>${threat.timestamp}</strong> - ${threat.event}
+                            <span class="${getSeverityClass(threat.severity)}">(${threat.severity})</span>
+                        `;
+                        listItem.addEventListener("click", () => {
+                            alert(`🕵️ Threat Details:\nSource: ${threat.source}\nEvent: ${threat.event}\nSeverity: ${threat.severity}\nStatus: ${threat.status}`);
+                        });
+                        timelineList.appendChild(listItem);
+                    }
+                });
+            }
+
+            function getSeverityClass(sev) {
+                if (sev === "High") return "status-danger";
+                if (sev === "Medium") return "status-warn";
+                if (sev === "Low") return "status-ok";
+                return "";
+            }
+
+            socket.on("threat_data", function (data) {
+                updateTimeline(data);
+            });
+
+            filterType.addEventListener("change", function () {
+                socket.emit("request_threat_data");
+            });
+        });
+    </script>
+</body>
+</html>-->

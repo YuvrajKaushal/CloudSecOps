@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Reports - SOC Dashboard</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+    <div class="sidebar">
+        <h2>🛡️ SOC Dashboard</h2>
+        <ul>
+            <li><a href="/">Dashboard</a></li>
+            <li><a href="/alerts">Alerts</a></li>
+            <li><a href="/reports" class="active">Reports</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <h1>📄 Security Reports</h1>
+
+        <form id="reportForm" style="margin-bottom: 20px;">
+            <label for="startDate">Date Range:</label>
+            <input type="date" id="startDate">
+            <span style="margin: 0 10px;">to</span>
+            <input type="date" id="endDate">
+            <button type="button" onclick="generateReport()">📊 Generate</button>
+        </form>
+
+        <div id="reportResults">
+            <h2>📈 Report Results</h2>
+            <table id="reportTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Timestamp</th>
+                        <th>Event</th>
+                        <th>Severity</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dynamic report data will populate here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function generateReport() {
+            let startDate = document.getElementById("startDate").value;
+            let endDate = document.getElementById("endDate").value;
+
+            fetch(`/get_reports?start=${startDate}&end=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    const table = document.getElementById("reportTable").getElementsByTagName("tbody")[0];
+                    table.innerHTML = "";
+                    data.forEach(report => {
+                        const severityClass = report.severity === "High" ? "status-danger" :
+                                              report.severity === "Medium" ? "status-warn" :
+                                              report.severity === "Low" ? "status-ok" : "";
+                        let row = `<tr>
+                            <td>${report.id}</td>
+                            <td>${report.timestamp}</td>
+                            <td>${report.event}</td>
+                            <td class="${severityClass}">${report.severity || 'Unknown'}</td>
+                            <td>${report.status}</td>
+                        </tr>`;
+                        table.innerHTML += row;
+                    });
+                });
+        }
+    </script>
+</body>
+</html>

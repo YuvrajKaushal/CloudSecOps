@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Incident Response Panel</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <style>
+    .status-danger { color: red; font-weight: bold; }
+    .status-warn { color: orange; font-weight: bold; }
+    .status-ok { color: green; font-weight: bold; }
+
+    select {
+      padding: 6px 10px;
+      border-radius: 5px;
+      background-color: #1e293b;
+      color: #f8fafc;
+      border: 1px solid #334155;
+      margin-right: 10px;
+    }
+
+    .filter-panel {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>🛡️ SOC Dashboard</h2>
+    <ul>
+      <li><a href="/">Dashboard</a></li>
+      <li><a href="/incident_response" class="active">Incident Response</a></li>
+      <li><a href="/alerts">Alerts</a></li>
+      <li><a href="/reports">Reports</a></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <h1>🚨 Incident Response Panel</h1>
+
+    <div class="filter-panel">
+      <label for="severityFilter">Severity:</label>
+      <select id="severityFilter">
+        <option value="all">All</option>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
+
+      <label for="statusFilter">Status:</label>
+      <select id="statusFilter">
+        <option value="all">All</option>
+        <option value="Pending">Pending</option>
+        <option value="Resolved">Resolved</option>
+        <option value="Escalated">Escalated</option>
+      </select>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Source</th>
+          <th>Event</th>
+          <th>Severity</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for threat in threats %}
+        <tr>
+          <td>{{ threat.timestamp }}</td>
+          <td>{{ threat.source }}</td>
+          <td>{{ threat.event }}</td>
+          <td class="{% if threat.severity == 'High' %}status-danger{% elif threat.severity == 'Medium' %}status-warn{% elif threat.severity == 'Low' %}status-ok{% endif %}">
+            {{ threat.severity }}
+          </td>
+          <td>{{ threat.status }}</td>
+          <td>
+            {% if threat.status != 'Resolved' %}
+            <form action="/resolve_threat/{{ threat.id }}" method="POST">
+              <button type="submit">✅ Resolve</button>
+            </form>
+            {% else %}
+            <span>✔️ Resolved</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 20px;">🚫 No current incidents found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const severityFilter = document.getElementById("severityFilter");
+    const statusFilter = document.getElementById("statusFilter");
+
+    severityFilter.addEventListener("change", filterTable);
+    statusFilter.addEventListener("change", filterTable);
+
+    function filterTable() {
+      const severity = severityFilter.value.toLowerCase();
+      const status = statusFilter.value.toLowerCase();
+      const rows = document.querySelectorAll("table tbody tr");
+
+      rows.forEach(row => {
+        const sev = row.children[3]?.textContent?.trim().toLowerCase() || "";
+        const stat = row.children[4]?.textContent?.trim().toLowerCase() || "";
+
+        const matchSev = severity === "all" || sev === severity;
+        const matchStat = status === "all" || stat === status;
+
+        row.style.display = (matchSev && matchStat) ? "" : "none";
+      });
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Incident Response Panel</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <style>
+        .status-danger { color: red; font-weight: bold; }
+        .status-warn { color: orange; font-weight: bold; }
+        .status-ok { color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>🛡️ SOC Dashboard</h2>
+        <ul>
+            <li><a href="/">Dashboard</a></li>
+            <li><a href="/incident_response" class="active">Incident Response</a></li>
+            <li><a href="/alerts">Alerts</a></li>
+            <li><a href="/reports">Reports</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <h1>🚨 Incident Response Panel</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Source</th>
+                    <th>Event</th>
+                    <th>Severity</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for threat in threats %}
+                <tr>
+                    <td>{{ threat.timestamp }}</td>
+                    <td>{{ threat.source }}</td>
+                    <td>{{ threat.event }}</td>
+                    <td class="{% if threat.severity == 'High' %}status-danger{% elif threat.severity == 'Medium' %}status-warn{% elif threat.severity == 'Low' %}status-ok{% endif %}">
+                        {{ threat.severity }}
+                    </td>
+                    <td>{{ threat.status }}</td>
+                    <td>
+                        {% if threat.status != 'Resolved' %}
+                        <form action="/resolve_threat/{{ threat.id }}" method="POST">
+                            <button type="submit">✅ Resolve</button>
+                        </form>
+                        {% else %}
+                        <span>✔️ Resolved</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px;">🚫 No current incidents found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>-->
+
+
+
+

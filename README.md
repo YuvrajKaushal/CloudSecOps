@@ -22,13 +22,13 @@ It provides real-time monitoring, incident response, reporting, and AI threat an
 
 ## 🛠️ Technologies Used
 
-- **Python 3.11 
-- **Flask 
-- **Flask-SQLAlchemy
-- **Socket.IO (Flask-SocketIO) 
-- **PostgreSQL
-- **Chart.js 
-- **HTML5 / CSS3 / JavaScript 
+- Python 3.11 
+- Flask 
+- Flask-SQLAlchemy
+- Socket.IO (Flask-SocketIO) 
+- PostgreSQL
+- Chart.js 
+- HTML5 / CSS3 / JavaScript 
 - **Docker** *(Recommended for deployment)*
 
 ---
